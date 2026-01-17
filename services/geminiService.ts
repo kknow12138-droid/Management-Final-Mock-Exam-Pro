@@ -2,12 +2,23 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Question, GradedQuestion } from '../types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+// Access the API key injected via build tools or environment
+const apiKey = process.env.API_KEY;
 
 export async function gradeExam(
   questions: Question[],
   userAnswers: Record<string, string>
 ): Promise<{ totalScore: number; feedback: string; results: GradedQuestion[] }> {
+  
+  if (!apiKey) {
+    return {
+      totalScore: 0,
+      feedback: "API_KEY 未配置。请在部署平台的环境变量中添加 API_KEY。",
+      results: []
+    };
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
   const model = "gemini-3-flash-preview";
   
   const payload = questions.map(q => ({
@@ -70,10 +81,9 @@ export async function gradeExam(
     };
   } catch (error) {
     console.error("Grading error:", error);
-    // Fallback if API fails
     return {
       totalScore: 0,
-      feedback: "评分过程中出现错误，请检查网络或重试。",
+      feedback: "评分过程中出现错误，可能是 API 调用额度已满或网络波动。",
       results: []
     };
   }

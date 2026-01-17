@@ -1,0 +1,5 @@
+{
+  "name": "Management Final Mock Exam Pro",
+  "description": "A comprehensive management final exam simulation platform featuring professional grading via Gemini API, tracking definitions, short answers, and case studies.",
+  "requestFramePermissions": []
+}
